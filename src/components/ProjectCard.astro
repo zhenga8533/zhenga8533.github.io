@@ -1,0 +1,54 @@
+---
+import Icon from './Icon.astro';
+import type { HTMLAttributes } from 'astro/types';
+import type { Project } from '../data/projects';
+
+interface Props extends HTMLAttributes<'article'> {
+  project: Project;
+}
+
+const { project, class: className, ...attrs } = Astro.props;
+const { title, description, tags, siteUrl, codeUrl } = project;
+const linkClass =
+  'inline-flex items-center gap-1.5 text-zinc-500 transition-colors hover:text-emerald-600 dark:text-zinc-400 dark:hover:text-emerald-400';
+---
+
+<article
+  class:list={[
+    'flex flex-col rounded-xl border border-zinc-200 p-5 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700',
+    className,
+  ]}
+  {...attrs}
+>
+  <h3 class="font-semibold text-zinc-900 dark:text-zinc-100">{title}</h3>
+  <p class="mt-2 flex-1 text-sm leading-relaxed">{description}</p>
+
+  <ul class="mt-4 flex flex-wrap gap-1.5">
+    {
+      tags.map((tag) => (
+        <li class="rounded-md bg-zinc-100 px-2 py-0.5 text-xs text-zinc-600 dark:bg-zinc-800/80 dark:text-zinc-300">
+          {tag}
+        </li>
+      ))
+    }
+  </ul>
+
+  {
+    (siteUrl || codeUrl) && (
+      <div class="mt-4 flex gap-4 text-sm">
+        {siteUrl && (
+          <a href={siteUrl} class={linkClass}>
+            <Icon name="external" class="size-4" />
+            Website
+          </a>
+        )}
+        {codeUrl && (
+          <a href={codeUrl} class={linkClass}>
+            <Icon name="github" class="size-4" />
+            Code
+          </a>
+        )}
+      </div>
+    )
+  }
+</article>

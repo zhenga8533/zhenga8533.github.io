@@ -1,0 +1,60 @@
+---
+import ProjectCard from './ProjectCard.astro';
+import { projects } from '../data/projects';
+
+const INITIAL_COUNT = 6;
+const hiddenCount = Math.max(projects.length - INITIAL_COUNT, 0);
+---
+
+<div id="project-grid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  {
+    projects.map((project, index) =>
+      index < INITIAL_COUNT ? (
+        <ProjectCard project={project} />
+      ) : (
+        <ProjectCard project={project} class="hidden" data-extra />
+      ),
+    )
+  }
+</div>
+
+<div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+  {
+    hiddenCount > 0 && (
+      <button
+        id="toggle-projects"
+        type="button"
+        aria-controls="project-grid"
+        aria-expanded="false"
+        class="rounded-lg border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-800"
+      >
+        <span data-label-collapsed>Show all {projects.length} projects</span>
+        <span data-label-expanded hidden>Show less</span>
+      </button>
+    )
+  }
+  <a
+    href="https://github.com/zhenga8533"
+    class="text-sm font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+  >
+    More on GitHub →
+  </a>
+</div>
+
+<script>
+  const button = document.getElementById('toggle-projects');
+  const grid = document.getElementById('project-grid');
+
+  button?.addEventListener('click', () => {
+    const expand = button.getAttribute('aria-expanded') !== 'true';
+    const topBefore = button.getBoundingClientRect().top;
+
+    grid?.querySelectorAll('[data-extra]').forEach((card) => card.classList.toggle('hidden', !expand));
+    button.setAttribute('aria-expanded', String(expand));
+    button.querySelector<HTMLElement>('[data-label-collapsed]')!.hidden = expand;
+    button.querySelector<HTMLElement>('[data-label-expanded]')!.hidden = !expand;
+
+    // Keep the button under the cursor so collapsing doesn't strand the reader further down the page
+    if (!expand) window.scrollBy({ top: button.getBoundingClientRect().top - topBefore, behavior: 'instant' });
+  });
+</script>
